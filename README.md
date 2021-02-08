@@ -1,6 +1,6 @@
 **What is your corpus, why did you choose it, and what do you think is interesting about it?**
 
-My corpus is a playlist of my own, containing almost 300 techno tracks. I chose this corpus because A) I like techno and cannot wait to go out again and B) I want to learn more about the specific subgenres. The diversity between the subgenres makes this playlist interesting to analyse. The goal of this project is to find out if it possible to detect the different subgenres.
+My corpus is a playlist of my own, containing almost 300 techno tracks. I chose this corpus because A) I like techno and cannot wait to go out again and B) I want to learn more about the specific subgenres. The diversity between the subgenres makes this playlist interesting to analyse. The goal of this project is to find out if it is possible to detect the different subgenres.
 
 https://open.spotify.com/playlist/31exRcY5H5HMQRJHzVzo3q?si=3cqkJgiMSCiYzQtx9GhbPg
 
@@ -27,4 +27,4 @@ Atypical:
 - [Bones - Oliver Koletzki](https://open.spotify.com/track/2nEMZAY2Hoa4eZwmvvt8vP?si=x6uH65B8T-SIFwafysX3Dw)
   WHY: Lots of lyrics, which is not that common in the other tracks in the playlist.
 - [Inkel jet 880 - Lauer](https://open.spotify.com/track/4p37U29L7s3uDxl46IpFGl?si=V3aZZf8gSH6LMcuQ2bcVvA)
-  WHY: Different build up than most of the other songs in the playlist, also a bit happier than avarage.
+  WHY: Different build up than most of the other songs in the playlist, also a bit happier than average.
