@@ -1,1 +1,42 @@
 
+---
+title: "Index"
+author: "Marijn Alta"
+date: "2/15/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(remotes)
+library(usethis)
+library(spotifyr)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+techno <- get_playlist_audio_features("spotify", "31exRcY5H5HMQRJHzVzo3q")
+```
+
+```{r}
+tracks <- 
+  techno %>% mutate(playlist = "Techno")
+
+ggplot(tracks, aes(x = playlist, y = danceability, fill = playlist)) +
+  geom_boxplot(alpha = 0.8) +
+  labs(
+    x = "Genre",
+    y = "Dancibility",
+    color = "Genre"
+  ) +
+  ggtitle("Dancibility of songs in the Techno playlist")
+
+# BPM distribution?
+# Song length?
+# How many songs per artist?
+
+```
