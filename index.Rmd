@@ -6,23 +6,179 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
 ---
-    
-Column
--------------------------------------
-    
-### Chart 1
-    
-```{r}
-```
-   
-Column
--------------------------------------
-   
-### Chart 2
 
+
+```{r Load packages, message=FALSE, echo=FALSE}
+library(tidyverse)
+library(spotifyr)
+library(remotes)
+library(usethis)
+library(plotly)
+library(compmus)
+library(DT)
+library(forcats)
+library(purrr)
+```
+
+```{r Load playlist, echo=FALSE}
+
+techno <- get_playlist_audio_features("", "31exRcY5H5HMQRJHzVzo3q")
+```
+
+### Self-similarity (Opus)
 ```{r}
-```   
- 
-### Chart 3
-    
+bzt <-
+  get_tidy_audio_analysis("6Ggtd1UBsm8GzMdDeEZOvO") %>% 
+  compmus_align(bars, segments) %>%                     
+  select(bars) %>%                                      
+  unnest(bars) %>%                                      
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "rms", norm = "euclidean"              
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "rms", norm = "euclidean"              
+      )
+  )
+
+bind_rows(
+  bzt %>%
+    compmus_self_similarity(pitches, "manhattan") %>%
+    mutate(d = d / max(d), type = "Chroma"),
+  bzt %>%
+    compmus_self_similarity(timbre, "euclidean") %>%
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>%
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+```
+
+***
+Preface: This is a work in progress and quite messy. Please do not show in class as I think there will be better examples to learn from.
+
+This is not a song that most people would come up with if they would have been asked to name a techno song, but it is in the playlist and an interesting example for this use case.
+
+
+### About
 ```{r}
+
+```
+
+***
+
+Preface: This is a work in progress and quite messy. Please do not show in class as I think there will be better examples to learn from.
+
+What is your corpus, why did you choose it, and what do you think is interesting about it?
+
+My corpus is a playlist of my own, containing almost 300 techno tracks. I chose this corpus because A) I like techno and cannot wait to go out again and B) I want to learn more about the specific subgenres. The diversity between the subgenres makes this playlist interesting to analyse. The goal of this project is to find out if it is possible to detect the different subgenres.
+
+https://open.spotify.com/playlist/31exRcY5H5HMQRJHzVzo3q?si=3cqkJgiMSCiYzQtx9GhbPg
+
+If you have been chosen to peer review this assignment, please do not hesitate to send me your own playlists (especially if you are a techno snob).
+
+What are the natural groups or comparison points in your corpus (e.g., albums, artists, genres, people)? What do you expect to be different among these groups, what do you expect to be the same, and what are you unsure about?
+
+The common denominator between the items in this corpus is the genre: techno. Some songs will probably be classified as techhouse, others as minimal techno. I expect that the songs of specific artists will be of the same subgenre. I am unsure about the approach I will have to take to differentiate the subgenres. I found some tools on the internet that classify the subgenres, I am curious to learn how they do this.
+
+How representative are the tracks in your corpus for the groups you want to compare? For example, is there a well-known difference between the live and studio versions of one of the artists, or is Spotify missing an important recording? Or if you are using a personal playlist of yourself or someone else, what percentage of your or their music listening takes place on Spotify? If your corpus is genre-based, how well do you think it covers the genre you are interested in, and what do you think are the most important gaps? There is no such thing as a perfect corpus, and it is important to think from the beginning about its strengths and limitations.
+
+I think my corpus is quite representative of the techno genre. I am not too deep into the scene, so I am pretty sure the tracks in the playlist are the more popular ones, this might influence the analysis. The most important gaps will probably come from niche subgenres that are barely included in the playlist. I think my corpus contains more melodic techno than the average techno playlist.
+
+Identify several tracks in your corpus that are either extremely typical or atypical. Why do you think that they are so typical or so strange? Several pages of your final portfolio will be dedicated to detailed analyses of specific tracks, and so it is important to think about which ones might be most interesting.
+
+Typical:
+
+C116W - Joyhauser WHY: Generic beat, quite steady.
+Time - NTO WHY: More melodic. The playlist contains quite a bit from this artist.
+Atypical:
+
+Bones - Oliver Koletzki WHY: Lots of lyrics, which is not that common in the other tracks in the playlist.
+Inkel jet 880 - Lauer WHY: Different build up than most of the other songs in the playlist, also a bit happier than average.
+
+
+### Dancibility
+```{r}
+tracks <- 
+  techno %>% mutate(playlist = "Techno")
+
+ggplot(tracks, aes(x = playlist, y = danceability, fill = playlist)) +
+  geom_boxplot(alpha = 0.8) +
+  labs(
+    x = "Genre",
+    y = "Dancibility",
+    color = "Genre"
+  ) +
+  ggtitle("Dancibility of songs in the Techno playlist")
+```
+
+***
+
+The dancibility is present. 
+
+### Chromagram (Opus)
+```{r}
+track <-
+  get_tidy_audio_analysis("6Ggtd1UBsm8GzMdDeEZOvO") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+track %>%
+  mutate(pitches = map(pitches, compmus_normalise, "chebyshev")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude", title = "Opus Chromagram") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+```
+
+***
+
+This is not a song that most people would come up with if they would have been asked to name a techno song, but it is in the playlist and an interesting example for this use case. In the chart on the left you can see the chromagram. The build-up of the song is extremely visible in this chart.
+
+
+
+### Discussion & future work
+```{r}
+
+```
+
+***
+
+The following charts will be added soon:
+
+BPM distribution
+
+Song length distribution
+
+Artist distribution
+
+To be continued.
